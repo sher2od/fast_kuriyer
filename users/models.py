@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from .managers import UserManager
 
 class User(AbstractUser):
     class Role(models.TextChoices):
@@ -13,6 +14,9 @@ class User(AbstractUser):
     full_name = models.CharField(max_length=255)
     phone = models.CharField(max_length=20, unique=True)
     email = models.EmailField(unique=True)
+    
+    objects = UserManager()
+    
 
     role = models.CharField(
         max_length=20,
