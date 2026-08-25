@@ -14,8 +14,8 @@ class CategoryViewSet(ModelViewSet):
     serializer_class = CategorySerializer
 
     def get_queryset(self):
-        return Category.objects.filter(is_active=True)
-        #return Category.objects.all()
+        #return Category.objects.filter(is_active=True)
+        return Category.objects.all()
     
 
     def get_permissions(self):
