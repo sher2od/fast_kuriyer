@@ -59,7 +59,7 @@ class ProductStockViewSet(ModelViewSet):
     def get_permissions(self):
         if self.action in [
             "create",
-            "update",
+            "update", 
             "partial_update",
             "destroy",
         ]:

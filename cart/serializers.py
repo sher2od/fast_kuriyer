@@ -18,7 +18,6 @@ class CartSerializer(serializers.ModelSerializer):
             "created_at"
         ]
     
-    
 class CartItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = CartItem
