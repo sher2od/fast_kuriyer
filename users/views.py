@@ -1,4 +1,5 @@
 from django.contrib.auth import authenticate
+from django.contrib.auth.hashers import make_password
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.views import APIView
 from drf_spectacular.utils import extend_schema
@@ -6,16 +7,18 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
+import secrets
 
-from .permissions import IsAuthenticatedUser
-from .models import Address
+from .permissions import IsAuthenticatedUser,IsAdminRole
+from .models import Address,User
 
 from .serializers import (
     RegisterSerializer,
     LoginSerializer,
     ProfileSerializer,
     ProfileUpdateSerializer,
-    AddressSerializer
+    AddressSerializer,
+    EmployeeCreateSerializer
 )
 
 
@@ -131,8 +134,45 @@ class AddressViewSet(ModelViewSet):
 
 
 
+@extend_schema(
+    tags=["Employee Management"],
+    request=EmployeeCreateSerializer,
+)
 
-
+class EmployeeCreateView(APIView):
+    permission_classes = [IsAdminRole]
+    
+    def post(self,request):
+        serializer = EmployeeCreateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        
+        phone = serializer.validated_data["phone"]
+        role = serializer.validated_data["role"]
+        
+        if User.objects.filter(phone=phone).exists():
+            return Response(
+                {"detail":"Bu telefon raaqam mavjud"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+            
+        temporary_password = secrets.token_urlsafe(8)
+        
+        user = User.objects.create(
+            phone=phone,
+            role=role,
+            password=make_password(temporary_password)
+        )
+        
+        return Response(
+            {
+                "message": "Xodim muvaffaqiyatli yaratildi",
+                "phone": user.phone,
+                "role": user.role,
+                "temporary_password": temporary_password,
+            },
+            status=status.HTTP_201_CREATED
+        )
+            
 
     
     

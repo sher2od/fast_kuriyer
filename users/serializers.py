@@ -81,3 +81,10 @@ class ProfileUpdateSerializer(serializers.ModelSerializer):
         fields = ['phone', 'full_name', 'email']
         
         
+class EmployeeCreateSerializer(serializers.Serializer):
+    phone = serializers.CharField()
+    role = serializers.ChoiceField(
+        choices=["courier","operator"]
+    )
+    
+    
